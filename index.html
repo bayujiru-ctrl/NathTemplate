@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ND - Creative Hub</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap');
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+        
+        body {
+            background-color: #ffffff;
+            background-image: linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
+            background-size: 25px 25px;
+            background-attachment: fixed;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 15px;
+            overflow-x: hidden;
+        }
+
+        .header-logo {
+            font-size: 38px; font-weight: 900; letter-spacing: -2px;
+            border: 3px solid #000; padding: 5px 15px; background: #fff; 
+            margin-bottom: 40px;
+        }
+
+        .preset-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
+            width: 100%; max-width: 850px;
+        }
+
+        .preset-card {
+            background: #ffffff; border: 2px solid #000; padding: 15px;
+            position: relative; display: flex; flex-direction: column;
+            opacity: 0; transform: translateY(30px);
+            transition: all 0.5s ease-out;
+        }
+
+        .preset-card.show { opacity: 1; transform: translateY(0); }
+
+        .preview-box {
+            width: 100%; height: 120px; background: #f3f4f6; border: 1px solid #000;
+            overflow: hidden; cursor: zoom-in; margin-bottom: 10px;
+        }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        .side-info {
+            border: 1px solid #000; padding: 5px; font-family: 'JetBrains Mono';
+            font-size: 10px; background: #f9fafb; text-align: center;
+            margin-bottom: 10px; display: flex; justify-content: center; gap: 10px;
+        }
+
+        .preset-title { font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: 4px; }
+        .preset-desc { font-size: 10px; color: #64748b; margin-bottom: 12px; line-height: 1.3; }
+
+        .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        
+        .btn {
+            position: relative; text-decoration: none; text-align: center; padding: 8px;
+            font-size: 10px; font-weight: 900; border: 1.5px solid #000;
+            text-transform: uppercase; cursor: pointer;
+            overflow: hidden; /* Mencegah loading line keluar batas tombol */
+        }
+        
+        /* Animasi Loading Line dengan pseudo-element (tanpa nambah tag HTML) */
+        .btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -100%;
+            width: 100%;
+            height: 3px;
+            background: #FFA500; /* Warna garis loading (Orange) */
+        }
+        .btn.active::after {
+            left: 100%;
+            transition: left 1.2s linear; /* Durasi animasi */
+        }
+
+        .btn-xml { background: #000; color: #fff; }
+        .btn-5mb { background: #fff; color: #000; }
+
+        .like-container {
+            display: flex; align-items: center; justify-content: space-between;
+            padding-top: 10px; border-top: 1px dashed #000;
+        }
+        .like-btn {
+            background: none; border: none; cursor: pointer; display: flex;
+            align-items: center; gap: 5px; font-family: 'JetBrains Mono';
+            font-weight: bold; font-size: 12px; padding: 0; outline: none;
+        }
+        .heart-icon { font-size: 18px; color: #ccc; }
+        .like-btn.active .heart-icon { color: #ff4757; }
+        .like-count { font-size: 11px; font-family: 'JetBrains Mono'; background: #000; color: #fff; padding: 2px 6px; }
+
+        .footer { margin-top: 60px; padding: 20px; width: 100%; border-top: 2px solid #000; text-align: center; font-family: 'JetBrains Mono'; font-size: 11px; font-weight: bold; }
+        
+        #zoom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; justify-content: center; align-items: center; cursor: zoom-out; }
+        #zoom-modal img { max-width: 90%; max-height: 80%; border: 3px solid #fff; }
+
+        @media (max-width: 600px) { .preset-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <div class="header-logo">ND</div>
+
+    <div class="preset-grid">
+        <div class="preset-card">
+            <div class="preview-box" onclick="zoomImg(this)"><img src="https://i.ibb.co/C3zHsW2Z/1778377132726.jpg"></div>
+            <div class="side-info"><span>New!</span> | <span>Template!</span> | <span>2026</span></div>
+            <div class="preset-title">Nath creator</div>
+            <p class="preset-desc">Gunakan template ini dengan memilih metode di bawah ini.</p>
+            <div class="button-row">
+                <div class="btn btn-xml" onclick="handleLink(this, '#')">XML</div>
+                <div class="btn btn-5mb" onclick="handleLink(this, 'https://alightcreative.com/am/share/u/JawQREU357QvWmTWk2HFOIa7HiD3/p/mfhY90nxri-171e1c1f9ba1bf43?source=link')">5MB</div>
+            </div>
+            <div class="like-container">
+                <button class="like-btn" id="btn-p1" onclick="toggleLike('p1')"><span class="heart-icon">❤</span> <span id="text-p1">Like</span></button>
+                <div class="like-count" id="count-p1">0 Likes</div>
+            </div>
+        </div>
+
+        <div class="preset-card">
+            <div class="preview-box" onclick="zoomImg(this)"><img src="https://i.ibb.co.com/xSzGQ3gK/2cffe9022f0524983eb766ed88ea08a9.jpg"></div>
+            <div class="side-info"><span>New</span> | <span>Template!</span> | <span>2026</span></div>
+            <div class="preset-title">Nath creator</div>
+            <p class="preset-desc">Gunakan template ini dengan memilih metode di bawah.</p>
+            <div class="button-row">
+                <div class="btn btn-xml" onclick="handleLink(this, '#')">XML</div>
+                <div class="btn btn-5mb" onclick="handleLink(this, 'https://alightcreative.com/am/share/u/JawQREU357QvWmTWk2HFOIa7HiD3/p/8mp6nsoqA9-adc5693cc338566a?source=link')">5MB</div>
+            </div>
+            <div class="like-container">
+                <button class="like-btn" id="btn-p2" onclick="toggleLike('p2')"><span class="heart-icon">❤</span> <span id="text-p2">Like</span></button>
+                <div class="like-count" id="count-p2">0 Likes</div>
+            </div>
+        </div>
+
+        <div class="preset-card">
+            <div class="preview-box" onclick="zoomImg(this)"><img src="#"></div>
+            <div class="side-info"><span>Coming</span> | <span>Soon</span> | <span>2026</span></div>
+            <div class="preset-title">Belum tersedia</div>
+            <p class="preset-desc">Tidak tersedia.</p>
+            <div class="button-row">
+                <div class="btn btn-xml" onclick="handleLink(this, '#')">XML</div>
+                <div class="btn btn-5mb" onclick="handleLink(this, '#')">5MB</div>
+            </div>
+            <div class="like-container">
+                <button class="like-btn" id="btn-p3" onclick="toggleLike('p3')"><span class="heart-icon">❤</span> <span id="text-p3">Like</span></button>
+                <div class="like-count" id="count-p3">0 Likes</div>
+            </div>
+        </div>
+
+        <div class="preset-card">
+            <div class="preview-box" onclick="zoomImg(this)"><img src="#"></div>
+            <div class="side-info"><span>Coming</span> | <span>Soon</span> | <span>2026</span></div>
+            <div class="preset-title">Tidak tersedia.</div>
+            <p class="preset-desc">Belum tersedia.</p>
+            <div class="button-row">
+                <div class="btn btn-xml" onclick="handleLink(this, '#')">XML</div>
+                <div class="btn btn-5mb" onclick="handleLink(this, '#')">5MB</div>
+            </div>
+            <div class="like-container">
+                <button class="like-btn" id="btn-p4" onclick="toggleLike('p4')"><span class="heart-icon">❤</span> <span id="text-p4">Like</span></button>
+                <div class="like-count" id="count-p4">0 Likes</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="zoom-modal" onclick="this.style.display='none'"><img id="modal-img" src=""></div>
+    <footer class="footer">Create By gemini & Nath creator</footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, runTransaction, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNrc1N2NB_swWgR2_Vtj74msQ8-epDPHU",
+            authDomain: "website-3611c.firebaseapp.com",
+            projectId: "website-3611c",
+            storageBucket: "website-3611c.firebasestorage.app",
+            databaseURL: "https://website-3611c-default-rtdb.asia-southeast1.firebasedatabase.app", 
+            messagingSenderId: "426479816628",
+            appId: "1:426479816628:web:e1bcdfc40e5db5a7dfece1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const presets = ['p1', 'p2', 'p3', 'p4'];
+
+        presets.forEach(id => {
+            onValue(ref(db, 'likes/' + id), (snap) => {
+                const count = snap.val() || 0;
+                const el = document.getElementById('count-' + id);
+                if(el) el.innerText = count + " Likes";
+            });
+
+            if (localStorage.getItem('liked_' + id)) {
+                const btn = document.getElementById('btn-' + id);
+                const txt = document.getElementById('text-' + id);
+                if(btn) btn.classList.add('active');
+                if(txt) txt.innerText = "Liked";
+            }
+        });
+
+        window.toggleLike = function(id) {
+            const btn = document.getElementById('btn-' + id);
+            const txt = document.getElementById('text-' + id);
+            const isLiked = localStorage.getItem('liked_' + id);
+            const increment = isLiked ? -1 : 1;
+
+            // LOCK button to prevent duplicate clicks during process
+            btn.style.pointerEvents = 'none';
+
+            runTransaction(ref(db, 'likes/' + id), (current) => {
+                const newValue = (current || 0) + increment;
+                return newValue < 0 ? 0 : newValue;
+            }).then(() => {
+                if (isLiked) {
+                    localStorage.removeItem('liked_' + id);
+                    btn.classList.remove('active');
+                    txt.innerText = "Like";
+                } else {
+                    localStorage.setItem('liked_' + id, 'true');
+                    btn.classList.add('active');
+                    txt.innerText = "Liked";
+                }
+                btn.style.pointerEvents = 'auto'; // UNLOCK
+            }).catch(() => {
+                btn.style.pointerEvents = 'auto';
+            });
+        };
+
+        // Scroll Animation Logic
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('show');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.preset-card').forEach(card => observer.observe(card));
+    </script>
+
+    <script>
+        function zoomImg(el) { 
+            document.getElementById('modal-img').src = el.querySelector('img').src; 
+            document.getElementById('zoom-modal').style.display = 'flex'; 
+        }
+        
+        // Fungsi link diperbarui agar menjalankan animasi terlebih dahulu
+        function handleLink(element, url) {
+            element.classList.add('active'); // Menjalankan animasi garis lewat penambahan class
+            
+            setTimeout(() => { 
+                element.classList.remove('active'); // Mereset tombol
+                if(url !== '#') {
+                    window.location.href = url; 
+                } else {
+                    alert("Link belum tersedia");
+                }
+            }, 1200); // 1200 ms = 1.2 detik (disamakan dengan durasi transisi CSS)
+        }
+    </script>
+</body>
+</html>
